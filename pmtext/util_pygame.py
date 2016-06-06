@@ -22,8 +22,16 @@ class BitmapFont:
 class TTF:
     def __init__(self, name, size):
         self.pg_font = pygame.font.Font(name, size)
+        self.cached_chars = {}
     def draw_glyph(self, dst, x, y, color, ch):
-        surf = self.pg_font.render(ch, True, color)
+        color_hex = "%02x%02x%02x%02x" % color
+        ch_hex = "%x" % ord(ch)
+        key = color_hex + ch_hex
+
+        if key not in self.cached_chars:
+            self.cached_chars[key] = self.pg_font.render(ch, True, color)
+
+        surf = self.cached_chars[key]
         dst.blit(surf, (x, y))
     def get_linesize(self):
         return self.pg_font.get_linesize()
