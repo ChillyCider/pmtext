@@ -5,6 +5,7 @@ _FONT    = 2
 _COLOR   = 3
 _SHAKE   = 4
 _WAIT    = 5
+_CUSTOM  = 6
 
 class Graph:
     def __init__(self, default_font):
@@ -105,7 +106,7 @@ class Typewriter:
         self.queue.append((_SHAKE, func))
 
     def pulse(self):
-        '''Flushes the queue up to the first printed character.'''
+        '''Executes the queue up to the first printed character.'''
         while self.queue:
             op = self.queue.pop(0)
 
@@ -122,6 +123,8 @@ class Typewriter:
                 self.view.shake(op[1])
             elif op[0] == _WAIT:
                 break
+            elif op[0] == _CUSTOM:
+                op[1]()
 
     def flush(self):
         '''Flush the whole queue.'''
@@ -132,3 +135,7 @@ class Typewriter:
         '''Queue up a delay.'''
         for _ in xrange(n):
             self.queue.append((_WAIT,))
+
+    def custom(self, func):
+        '''Queue up a custom function call.'''
+        self.queue.append((_CUSTOM, func))
