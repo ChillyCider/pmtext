@@ -24,13 +24,15 @@ class TTF:
         self.pg_font = pygame.font.Font(name, size)
         self.cached_chars = {}
     def draw_glyph(self, dst, x, y, color, ch):
-        color_hex = "%02x%02x%02x%02x" % color
-        ch_hex = "%x" % ord(ch)
-        key = color_hex + ch_hex
+        # Make a quick integer key for this glyph: 0xRRGGBB + (ch<<24)
+        key = (color[0]<<16) | (color[1]<<8) | color[2]
+        key |= ord(ch) << 24
 
+        # Cache it
         if key not in self.cached_chars:
             self.cached_chars[key] = self.pg_font.render(ch, True, color)
 
+        # Draw it
         surf = self.cached_chars[key]
         dst.blit(surf, (x, y))
     def get_linesize(self):
